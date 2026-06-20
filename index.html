@@ -159,21 +159,27 @@
   .nameblock{text-align:center;margin-top:16px}
   .nameblock .nbn{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:24px;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.2)}
   .nameblock .nben{font-family:'Manrope';font-weight:600;font-size:12px;letter-spacing:1px;color:#e7fbe9;opacity:.9;margin-top:3px;text-transform:uppercase}
-  .nameblock .nbd{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;
-    color:#1c2a1c;background:linear-gradient(135deg,var(--gold-300),var(--gold-500));padding:5px 14px;border-radius:999px;
-    box-shadow:0 4px 12px -2px rgba(0,0,0,.3)}
+  .nameblock .nbd{display:inline-block;margin-top:8px;font-size:12.5px;font-weight:700;letter-spacing:.3px;
+    color:#3a2705;background:linear-gradient(160deg,var(--gold-300) 0%,var(--gold-500) 55%,#c8932e 100%);
+    padding:6px 16px;border-radius:999px;
+    box-shadow:0 4px 14px -3px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.5)}
 
   .quote{margin-top:auto;text-align:center;font-style:italic;font-size:14.5px;line-height:1.45;
     color:#f1fff2;font-weight:500;max-width:380px;padding-top:14px}
   .quote .qm{font-family:'Baloo Da 2';font-size:26px;opacity:.55;color:var(--gold-300);line-height:0;vertical-align:-8px}
 
   .footer{margin-top:14px;width:100%;display:flex;align-items:center;justify-content:space-between}
-  .footer .date{font-size:11.5px;letter-spacing:1px;color:#dff7e2;opacity:.85;font-family:'Manrope';font-weight:600}
-  .footer .logo{width:54px;height:54px;border-radius:50%;background:#fff;padding:4px;flex-shrink:0;
-    box-shadow:0 8px 20px -6px rgba(0,0,0,.4),0 0 0 2px var(--gold-500);display:grid;place-items:center;overflow:hidden}
+  .footer .date{font-size:10px;letter-spacing:1.1px;color:var(--gold-300);opacity:.8;font-family:'Manrope';font-weight:600;line-height:1.55;text-transform:uppercase}
+  .footer .date span{display:block;font-size:8.5px;letter-spacing:.5px;font-weight:400;color:#dff7e2;opacity:.65;text-transform:none}
+  .footer .logo{width:50px;height:50px;border-radius:50%;background:#fff;padding:3px;flex-shrink:0;
+    box-shadow:0 6px 16px -4px rgba(0,0,0,.4);display:grid;place-items:center;overflow:hidden}
   .footer .logo img{width:100%;height:100%;object-fit:contain}
 
   .note{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
+  .sitefooter{text-align:center;font-size:12px;color:var(--muted);opacity:.8;
+    font-family:'Manrope';padding:14px 24px 22px;border-top:1px solid var(--line);margin-top:8px}
+  .sitefooter a{color:var(--green-700);font-weight:700;text-decoration:none}
+  .sitefooter a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -262,7 +268,7 @@
               <div class="quote"><span class="qm">“</span>মানুষ, বৃক্ষের মতো আনত হও, হও সবুজ<span class="qm">”</span></div>
 
               <div class="footer">
-                <div class="date" id="outDate">SEPTEMBER 2026</div>
+                <div class="date">Design: Mozahid<br><span>Software Engineer</span></div>
                 <div class="logo">
                   <img id="logoImg" alt="logo" src="asset/f4e0b490-e97f-4035-abc0-717420b69b01.png" />
                 </div>
@@ -274,6 +280,8 @@
       <p class="note">প্রিভিউ — ডাউনলোড করলে উচ্চ রেজোলিউশন (1080×1350) ছবি পাবে।</p>
     </div>
   </div>
+
+  <footer class="sitefooter">Built by <a href="https://www.facebook.com/mozahid.hba/" target="_blank" rel="noopener"><b>Mozahid</b></a> — Software Engineer</footer>
 
 <script>
   const $ = id => document.getElementById(id);
@@ -289,11 +297,6 @@
   bind('nameBn','outNameBn');
   bind('nameEn','outNameEn', v=>v.toUpperCase());
   bind('desig','outDesig');
-
-  // ---- auto date (current month/year) ----
-  const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
-  const now = new Date();
-  $('outDate').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
 
   // ---- align forest band exactly behind the photo frame ----
   function syncForestBand(){
