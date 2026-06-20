@@ -206,6 +206,7 @@
     max-height:88vh;overflow-y:auto;padding:22px 22px 20px;box-shadow:0 30px 60px -10px rgba(0,0,0,.35)}
   .modalCard h3{margin:0 0 4px;font-size:17px;color:var(--green-900);font-family:'Baloo Da 2'}
   .modalCard .sub{margin:0 0 14px;font-size:12.5px;color:var(--muted)}
+  #captionList{max-height:280px;overflow-y:auto;padding-right:4px}
   .captionOpt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);
     background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;
     font-size:13px;line-height:1.5;color:var(--ink);font-family:'Hind Siliguri',sans-serif;
@@ -451,11 +452,16 @@
   function buildCaptions(){
     const nameBn = ($('nameBn').value || '').trim();
     const desig = ($('desig').value || '').trim();
-    const who = nameBn && desig ? `${nameBn}, ${desig}` : (nameBn || 'আমাদের একজন সদস্য');
+    const signOffBn = nameBn && desig ? `— ${nameBn}, ${desig}` : (nameBn ? `— ${nameBn}` : '— সাতক্ষীরা বোটানিক্যাল সোসাইটি');
+    const nameEn = ($('nameEn').value || '').trim();
+    const signOffEn = nameEn && desig ? `— ${nameEn}, ${desig}` : (nameEn ? `— ${nameEn}` : '— Satkhira Botanical Society');
     return [
-      `🌿 ${who} — সাতক্ষীরা বোটানিক্যাল সোসাইটির পরিবারের একজন গর্বিত সদস্য।\nমানুষ, প্রকৃতির মতো আনত হও, হও সবুজ। 🌱\n#SatkhiraBotanicalSociety #সবুজ_বাংলাদেশ`,
-      `🍃 সবুজে সবুজে গড়ে উঠুক আগামীর বাংলাদেশ।\n${who} — সাতক্ষীরা বোটানিক্যাল সোসাইটি। 🌳\n#GreenBangladesh #SBS`,
-      `🌳 গাছ লাগাই, প্রকৃতি বাঁচাই।\n${who}, সাতক্ষীরা বোটানিক্যাল সোসাইটির সাথে আছি এই যাত্রায়। 🌿\n#WeForNatureAndHumanity`
+      `🌿 মানুষ, প্রকৃতির মতো আনত হও, হও সবুজ।\nসাতক্ষীরা বোটানিক্যাল সোসাইটির পরিবারের একজন গর্বিত সদস্য হিসেবে যাত্রা শুরু করলাম।\n${signOffBn}\n#SatkhiraBotanicalSociety #সবুজ_বাংলাদেশ`,
+      `🍃 সবুজে সবুজে গড়ে উঠুক আগামীর বাংলাদেশ।\n${signOffBn}\n#GreenBangladesh #SBS`,
+      `🌳 গাছ লাগাই, প্রকৃতি বাঁচাই — এই যাত্রায় পাশে আছি।\n${signOffBn}\n#WeForNatureAndHumanity`,
+      `🌱 Growing a greener future, one tree at a time.\nProud to be part of the Satkhira Botanical Society family.\n${signOffEn}\n#SatkhiraBotanicalSociety #GreenBangladesh`,
+      `🌲 Nature gives us everything — it's time we give back.\n${signOffEn}\n#WeForNatureAndHumanity #SBS`,
+      `🍀 সবুজ ভবিষ্যতের জন্য আজই একটা প্রতিশ্রুতি।\n${signOffBn}\n#সবুজ_বাংলাদেশ #SBS`
     ];
   }
   let selectedCaption = '';
