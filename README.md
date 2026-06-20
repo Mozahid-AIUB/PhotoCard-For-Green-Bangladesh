@@ -35,5 +35,5 @@ The **month/year** auto-updates to the current month.
 ## Tech
 - Plain HTML/CSS/JS, no build step.
 - Fonts: Hind Siliguri, Baloo Da 2, Manrope (Google Fonts).
-- PNG export: `html-to-image` (CDN). Needs internet on first load for fonts + that library.
+- PNG export: `html2canvas` (CDN). Needs internet on first load for fonts + that library.
 # PhotoCard-For-Green-Bangladesh

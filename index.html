@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>সাতক্ষীরা বোটানিক্যাল সোসাইটি — Photocard Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+  :root{
+    --green-900:#0b3d1f;
+    --green-800:#11532a;
+    --green-700:#1a7a3c;
+    --green-600:#2aa34a;
+    --green-500:#39b54a;
+    --green-400:#5cc85f;
+    --leaf:#5cb338;
+    --paper:#f4f7f3;
+    --ink:#0e1f14;
+    --muted:#6b7d70;
+    --line:#e2e9e2;
+    --radius:18px;
+    --shadow:0 18px 40px -12px rgba(11,61,31,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Manrope','Hind Siliguri',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #e8f4ea 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, #e3f1e6 0%, transparent 55%),
+      #eef3ee;
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    display:flex;align-items:center;gap:12px;
+    padding:18px 24px;
+    border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.6);
+    backdrop-filter:blur(8px);
+    position:sticky;top:0;z-index:5;
+  }
+  .topbar .mark{
+    width:34px;height:34px;border-radius:50%;
+    background:conic-gradient(from 200deg,var(--green-600),var(--green-800));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;
+    box-shadow:0 6px 14px -4px rgba(26,122,60,.6);
+  }
+  .topbar h1{font-size:16px;font-weight:700;letter-spacing:.2px}
+  .topbar h1 span{display:block;font-size:12px;font-weight:500;color:var(--muted);font-family:'Hind Siliguri'}
+
+  .wrap{
+    max-width:1180px;margin:0 auto;padding:28px 24px 60px;
+    display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start;
+  }
+  @media (max-width:900px){.wrap{grid-template-columns:1fr;gap:24px}}
+
+  /* ---------- Controls panel ---------- */
+  .panel{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);position:sticky;top:90px;
+  }
+  @media (max-width:900px){.panel{position:static}}
+  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:1.4px;color:var(--green-700);margin-bottom:4px}
+  .panel .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:#2c3b30;margin-bottom:7px}
+  .field input[type=text]{
+    width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:11px;
+    font-size:14px;font-family:inherit;transition:border-color .15s, box-shadow .15s;background:#fcfdfc;
+  }
+  .field input[type=text]:focus{outline:none;border-color:var(--green-500);box-shadow:0 0 0 3px rgba(57,181,74,.15)}
+
+  .drop{
+    border:1.5px dashed #bcd3c0;border-radius:13px;padding:20px;text-align:center;
+    background:#f7fbf7;cursor:pointer;transition:.15s;
+  }
+  .drop:hover{border-color:var(--green-500);background:#f1f9f1}
+  .drop.has{border-style:solid;border-color:var(--green-400)}
+  .drop .ico{font-size:26px}
+  .drop p{font-size:13px;color:var(--muted);margin-top:6px}
+  .drop b{color:var(--green-700)}
+
+  .slider{margin-top:10px}
+  .slider label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px}
+  input[type=range]{width:100%;accent-color:var(--green-600)}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+  .btn{
+    width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;
+    font-family:inherit;font-size:15px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,var(--green-600),var(--green-800));
+    box-shadow:0 12px 24px -8px rgba(17,83,42,.6);transition:.15s;margin-top:6px;
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+  .btn:active{transform:translateY(0)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  /* ---------- Preview ---------- */
+  .stage{display:flex;justify-content:center}
+  .card-shadow{filter:drop-shadow(0 30px 60px rgba(11,61,31,.35))}
+
+  /* THE CARD — 1080x1350 scaled down for screen */
+  .card{
+    width:540px;height:675px;position:relative;overflow:hidden;border-radius:22px;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #2fae4f 0%, transparent 55%),
+      linear-gradient(160deg,#1f9a45 0%,#157a36 45%,#0d5e29 100%);
+    color:#fff;font-family:'Hind Siliguri','Manrope',sans-serif;
+    transform-origin:top center;
+  }
+  /* subtle texture + decorative leaves */
+  .card .grain{position:absolute;inset:0;opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:6px 6px;}
+  .card .blob{position:absolute;border-radius:50%;background:rgba(255,255,255,.06);filter:blur(2px)}
+  .card .b1{width:240px;height:240px;top:-90px;left:-80px}
+  .card .b2{width:180px;height:180px;bottom:-60px;right:-50px;background:rgba(255,255,255,.05)}
+  .card .leafdec{position:absolute;opacity:.10}
+  .card .ld1{top:14px;right:18px;width:120px}
+  .card .ld2{bottom:90px;left:-10px;width:90px;transform:rotate(30deg)}
+
+  .card .inner{position:absolute;inset:0;padding:42px 40px;display:flex;flex-direction:column;align-items:center}
+
+  .head{text-align:center}
+  .head .kicker{font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    font-family:'Manrope';font-weight:700;color:#d6f5d9;opacity:.85;margin-bottom:8px}
+  .head h2{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:30px;line-height:1.18;
+    text-shadow:0 2px 10px rgba(0,0,0,.18)}
+  .head .tag{font-size:14px;color:#e7fbe9;opacity:.92;margin-top:6px;font-weight:500}
+  .rule{width:54px;height:3px;border-radius:3px;background:rgba(255,255,255,.6);margin:14px auto 0}
+
+  /* photo frame */
+  .frameWrap{margin-top:26px;position:relative}
+  .frame{
+    width:280px;height:300px;background:#fff;border-radius:18px;padding:12px;
+    box-shadow:0 24px 50px -18px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.04);
+  }
+  .photo{width:100%;height:100%;border-radius:11px;overflow:hidden;background:#dfe7e0 url('') center/cover;position:relative}
+  .photo img{position:absolute;left:50%;top:50%;width:100%;transform:translate(-50%,-50%) scale(1);transform-origin:center;will-change:transform}
+  .photo .ph{position:absolute;inset:0;display:grid;place-items:center;color:#9bb0a0;font-size:13px;text-align:center;font-family:'Manrope';gap:6px;flex-direction:column}
+  .photo .ph svg{width:46px;height:46px;opacity:.6}
+
+  .nameblock{text-align:center;margin-top:20px}
+  .nameblock .nbn{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:26px;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .nameblock .nben{font-family:'Manrope';font-weight:600;font-size:13px;letter-spacing:1px;color:#e7fbe9;opacity:.9;margin-top:3px;text-transform:uppercase}
+  .nameblock .nbd{display:inline-block;margin-top:9px;font-size:13.5px;font-weight:600;
+    background:rgba(255,255,255,.16);padding:5px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22)}
+
+  .quote{margin-top:auto;text-align:center;font-style:italic;font-size:16px;line-height:1.5;
+    color:#f1fff2;font-weight:500;max-width:380px;padding-top:18px}
+  .quote .qm{font-family:'Baloo Da 2';font-size:30px;opacity:.5;line-height:0;vertical-align:-10px}
+
+  .footer{margin-top:18px;width:100%;display:flex;align-items:center;justify-content:space-between}
+  .footer .date{font-size:12px;letter-spacing:1px;color:#dff7e2;opacity:.85;font-family:'Manrope';font-weight:600}
+  .footer .logo{width:62px;height:62px;border-radius:50%;background:#fff;padding:5px;
+    box-shadow:0 8px 20px -6px rgba(0,0,0,.4);display:grid;place-items:center;overflow:hidden}
+  .footer .logo img{width:100%;height:100%;object-fit:contain}
+
+  .note{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="mark">S</div>
+    <h1>Photocard Maker <span>সাতক্ষীরা বোটানিক্যাল সোসাইটি</span></h1>
+  </div>
+
+  <div class="wrap">
+    <!-- CONTROLS -->
+    <div class="panel">
+      <h2>তোমার তথ্য দাও</h2>
+      <p class="sub">ছবি দাও, নাম লেখো — তারপর ডাউনলোড করো।</p>
+
+      <div class="field">
+        <label>ছবি (Photo)</label>
+        <div class="drop" id="drop">
+          <div class="ico">🌿</div>
+          <p><b>ছবি আপলোড করো</b><br>ট্যাপ করো বা ছবি টেনে আনো</p>
+        </div>
+        <input type="file" id="file" accept="image/*" hidden />
+        <div class="slider" id="zoomWrap" style="display:none">
+          <label>জুম <span id="zoomVal">100%</span></label>
+          <input type="range" id="zoom" min="100" max="260" value="100" />
+          <label style="margin-top:8px">উপর/নিচ অবস্থান</label>
+          <input type="range" id="posY" min="-60" max="60" value="0" />
+          <label style="margin-top:8px">বাম/ডান অবস্থান</label>
+          <input type="range" id="posX" min="-60" max="60" value="0" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>নাম (বাংলা)</label>
+        <input type="text" id="nameBn" placeholder="মোস্তফা মাহফুজ" value="মোস্তফা মাহফুজ" />
+      </div>
+      <div class="field">
+        <label>নাম (English)</label>
+        <input type="text" id="nameEn" placeholder="Mostofa Mahfuz" value="MOSTOFA MAHFUZ" />
+      </div>
+      <div class="field">
+        <label>পদবি (Designation)</label>
+        <input type="text" id="desig" placeholder="সাংগঠনিক সম্পাদক" value="সাংগঠনিক সম্পাদক" />
+      </div>
+
+      <button class="btn" id="download">⬇  ডাউনলোড PNG</button>
+      <p class="hint" id="status"></p>
+    </div>
+
+    <!-- PREVIEW -->
+    <div>
+      <div class="stage">
+        <div class="card-shadow">
+          <div class="card" id="card">
+            <div class="grain"></div>
+            <div class="blob b1"></div>
+            <div class="blob b2"></div>
+            <svg class="leafdec ld1" viewBox="0 0 100 100" fill="#fff"><path d="M50 5C30 25 20 50 30 75c5 12 18 20 20 20s15-8 20-20C80 50 70 25 50 5z"/></svg>
+            <svg class="leafdec ld2" viewBox="0 0 100 100" fill="#fff"><path d="M50 5C30 25 20 50 30 75c5 12 18 20 20 20s15-8 20-20C80 50 70 25 50 5z"/></svg>
+
+            <div class="inner">
+              <div class="head">
+                <div class="kicker">SATKHIRA BOTANICAL SOCIETY</div>
+                <h2>সাতক্ষীরা বোটানিক্যাল সোসাইটি</h2>
+                <div class="tag">প্রকৃতি ও মানবতার তরে আমরা</div>
+                <div class="rule"></div>
+              </div>
+
+              <div class="frameWrap">
+                <div class="frame">
+                  <div class="photo" id="photo">
+                    <div class="ph" id="ph">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+                      ছবি এখানে আসবে
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="nameblock">
+                <div class="nbn" id="outNameBn">মোস্তফা মাহফুজ</div>
+                <div class="nben" id="outNameEn">MOSTOFA MAHFUZ</div>
+                <div class="nbd" id="outDesig">সাংগঠনিক সম্পাদক</div>
+              </div>
+
+              <div class="quote"><span class="qm">“</span>মানুষ, বৃক্ষের মতো আনত হও, হও সবুজ<span class="qm">”</span></div>
+
+              <div class="footer">
+                <div class="date" id="outDate">SEPTEMBER 2026</div>
+                <div class="logo">
+                  <img id="logoImg" alt="logo"
+                    src="logo.png"
+                    onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;circle cx=%2250%22 cy=%2250%22 r=%2248%22 fill=%22none%22 stroke=%22%231a7a3c%22 stroke-width=%223%22/&gt;&lt;path d=%22M50 22C38 36 33 50 40 64c3 7 9 12 10 12s7-5 10-12c7-14 2-28-10-42z%22 fill=%22%235cb338%22/&gt;&lt;path d=%22M50 60C42 52 32 50 26 54c10 4 16 10 24 18 8-8 14-14 24-18-6-4-16-2-24 6z%22 fill=%22%234a9e2e%22/&gt;&lt;/svg&gt;'" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="note">প্রিভিউ — ডাউনলোড করলে উচ্চ রেজোলিউশন (1080×1350) ছবি পাবে।</p>
+    </div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fileInput = $('file'), drop = $('drop'), photo = $('photo'), ph = $('ph');
+  const zoom = $('zoom'), posX = $('posX'), posY = $('posY'), zoomWrap = $('zoomWrap'), zoomVal = $('zoomVal');
+  let imgEl = null;
+
+  // ---- live text bindings ----
+  const bind = (input, out, transform = v=>v) => {
+    const el = $(input), o = $(out);
+    el.addEventListener('input', () => { o.textContent = transform(el.value) || ' '; });
+  };
+  bind('nameBn','outNameBn');
+  bind('nameEn','outNameEn', v=>v.toUpperCase());
+  bind('desig','outDesig');
+
+  // ---- auto date (current month/year) ----
+  const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  const now = new Date();
+  $('outDate').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+
+  // ---- photo upload ----
+  drop.addEventListener('click', () => fileInput.click());
+  ['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('has')}));
+  ['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('has')}));
+  drop.addEventListener('drop', ev => { if(ev.dataTransfer.files[0]) loadImage(ev.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', () => { if(fileInput.files[0]) loadImage(fileInput.files[0]); });
+
+  function loadImage(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      ph.style.display = 'none';
+      if(!imgEl){ imgEl = document.createElement('img'); photo.appendChild(imgEl); }
+      imgEl.src = e.target.result;
+      drop.classList.add('has');
+      drop.querySelector('p').innerHTML = '<b>✓ ছবি যুক্ত হয়েছে</b><br>জুম ও অবস্থান ঠিক করো';
+      zoomWrap.style.display = 'block';
+      applyTransform();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function applyTransform(){
+    if(!imgEl) return;
+    const z = zoom.value/100;
+    zoomVal.textContent = zoom.value + '%';
+    imgEl.style.transform = `translate(calc(-50% + ${posX.value}px), calc(-50% + ${posY.value}px)) scale(${z})`;
+  }
+  [zoom,posX,posY].forEach(s=>s.addEventListener('input',applyTransform));
+
+  // ---- download ----
+  $('download').addEventListener('click', async () => {
+    const btn = $('download'), status = $('status'), card = $('card');
+    btn.disabled = true; status.textContent = 'তৈরি হচ্ছে…';
+    try{
+      // make sure all webfonts are ready so Bangla metrics match the preview
+      if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      // render at 2x of the 540px card => 1080x1350
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0d5e29',
+        logging: false
+      });
+      const dataUrl = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      const safe = ($('nameEn').value || 'photocard').trim().replace(/\s+/g,'_');
+      a.download = `SBS_${safe}.png`;
+      a.href = dataUrl;
+      a.click();
+      status.textContent = '✓ ডাউনলোড সম্পন্ন!';
+    }catch(err){
+      console.error(err);
+      status.textContent = 'সমস্যা হয়েছে — আবার চেষ্টা করো।';
+    }finally{
+      btn.disabled = false;
+      setTimeout(()=>status.textContent='',3500);
+    }
+  });
+</script>
+</body>
+</html>
