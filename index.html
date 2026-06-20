@@ -10,13 +10,17 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
   :root{
-    --green-900:#0b3d1f;
-    --green-800:#11532a;
-    --green-700:#1a7a3c;
-    --green-600:#2aa34a;
-    --green-500:#39b54a;
-    --green-400:#5cc85f;
+    /* deep botanical core, shifted toward teal-green for richness (avoids flat "Excel green") */
+    --green-900:#08291c;
+    --green-800:#0e3d27;
+    --green-700:#155c34;
+    --green-600:#1f7d41;
+    --green-500:#2f9c50;
+    --green-400:#57b863;
     --leaf:#5cb338;
+    /* warm gold accent — complementary to green, signals "premium" */
+    --gold-500:#e3b04b;
+    --gold-300:#f3d28a;
     --paper:#f4f7f3;
     --ink:#0e1f14;
     --muted:#6b7d70;
@@ -107,8 +111,9 @@
   .card{
     width:540px;height:675px;position:relative;overflow:hidden;border-radius:22px;
     background:
-      radial-gradient(120% 80% at 50% -10%, #2fae4f 0%, transparent 55%),
-      linear-gradient(160deg,#1f9a45 0%,#157a36 45%,#0d5e29 100%);
+      radial-gradient(130% 70% at 50% -15%, #2f9c50 0%, transparent 58%),
+      radial-gradient(90% 60% at 100% 110%, #0a3322 0%, transparent 60%),
+      linear-gradient(165deg,#155c34 0%,#0e3d27 50%,#08291c 100%);
     color:#fff;font-family:'Hind Siliguri','Manrope',sans-serif;
     transform-origin:top center;
   }
@@ -116,6 +121,13 @@
   .card .grain{position:absolute;inset:0;opacity:.5;
     background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
     background-size:6px 6px;}
+  .card .forestband{position:absolute;left:0;right:0;top:170px;height:130px;overflow:hidden;}
+  .card .forestband img{position:absolute;left:0;top:0;width:100%;height:540px;object-fit:cover;
+    filter:saturate(1.1) brightness(.85);}
+  .card .forestband::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(13,94,41,.55),rgba(13,94,41,.18) 50%,rgba(13,94,41,.6));}
+  .card .forestband::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(13,94,41,.55),rgba(13,94,41,.25) 40%,rgba(13,94,41,.65));}
   .card .blob{position:absolute;border-radius:50%;background:rgba(255,255,255,.06);filter:blur(2px)}
   .card .b1{width:240px;height:240px;top:-90px;left:-80px}
   .card .b2{width:180px;height:180px;bottom:-60px;right:-50px;background:rgba(255,255,255,.05)}
@@ -123,41 +135,42 @@
   .card .ld1{top:14px;right:18px;width:120px}
   .card .ld2{bottom:90px;left:-10px;width:90px;transform:rotate(30deg)}
 
-  .card .inner{position:absolute;inset:0;padding:42px 40px;display:flex;flex-direction:column;align-items:center}
+  .card .inner{position:absolute;inset:0;padding:36px 40px 28px;display:flex;flex-direction:column;align-items:center}
 
   .head{text-align:center}
-  .head .kicker{font-size:11px;letter-spacing:3px;text-transform:uppercase;
-    font-family:'Manrope';font-weight:700;color:#d6f5d9;opacity:.85;margin-bottom:8px}
-  .head h2{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:30px;line-height:1.18;
-    text-shadow:0 2px 10px rgba(0,0,0,.18)}
-  .head .tag{font-size:14px;color:#e7fbe9;opacity:.92;margin-top:6px;font-weight:500}
-  .rule{width:54px;height:3px;border-radius:3px;background:rgba(255,255,255,.6);margin:14px auto 0}
+  .head .kicker{font-size:10.5px;letter-spacing:3px;text-transform:uppercase;
+    font-family:'Manrope';font-weight:700;color:var(--gold-300);opacity:.9;margin-bottom:7px}
+  .head h2{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:28px;line-height:1.16;
+    text-shadow:0 2px 10px rgba(0,0,0,.22)}
+  .head .tag{font-size:13px;color:#e7fbe9;opacity:.92;margin-top:5px;font-weight:500}
+  .rule{width:54px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--gold-500),var(--gold-300));margin:12px auto 0}
 
   /* photo frame */
-  .frameWrap{margin-top:26px;position:relative}
+  .frameWrap{margin-top:20px;position:relative}
   .frame{
-    width:280px;height:300px;background:#fff;border-radius:18px;padding:12px;
-    box-shadow:0 24px 50px -18px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.04);
+    width:268px;height:280px;background:#fff;border-radius:18px;padding:10px;
+    box-shadow:0 24px 50px -18px rgba(0,0,0,.55), 0 0 0 1px rgba(227,176,75,.35), inset 0 0 0 1px rgba(0,0,0,.04);
   }
   .photo{width:100%;height:100%;border-radius:11px;overflow:hidden;background:#dfe7e0 url('') center/cover;position:relative}
   .photo img{position:absolute;left:50%;top:50%;width:100%;transform:translate(-50%,-50%) scale(1);transform-origin:center;will-change:transform}
   .photo .ph{position:absolute;inset:0;display:grid;place-items:center;color:#9bb0a0;font-size:13px;text-align:center;font-family:'Manrope';gap:6px;flex-direction:column}
   .photo .ph svg{width:46px;height:46px;opacity:.6}
 
-  .nameblock{text-align:center;margin-top:20px}
-  .nameblock .nbn{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:26px;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.2)}
-  .nameblock .nben{font-family:'Manrope';font-weight:600;font-size:13px;letter-spacing:1px;color:#e7fbe9;opacity:.9;margin-top:3px;text-transform:uppercase}
-  .nameblock .nbd{display:inline-block;margin-top:9px;font-size:13.5px;font-weight:600;
-    background:rgba(255,255,255,.16);padding:5px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22)}
+  .nameblock{text-align:center;margin-top:16px}
+  .nameblock .nbn{font-family:'Baloo Da 2','Hind Siliguri';font-weight:800;font-size:24px;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .nameblock .nben{font-family:'Manrope';font-weight:600;font-size:12px;letter-spacing:1px;color:#e7fbe9;opacity:.9;margin-top:3px;text-transform:uppercase}
+  .nameblock .nbd{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;
+    color:#1c2a1c;background:linear-gradient(135deg,var(--gold-300),var(--gold-500));padding:5px 14px;border-radius:999px;
+    box-shadow:0 4px 12px -2px rgba(0,0,0,.3)}
 
-  .quote{margin-top:auto;text-align:center;font-style:italic;font-size:16px;line-height:1.5;
-    color:#f1fff2;font-weight:500;max-width:380px;padding-top:18px}
-  .quote .qm{font-family:'Baloo Da 2';font-size:30px;opacity:.5;line-height:0;vertical-align:-10px}
+  .quote{margin-top:auto;text-align:center;font-style:italic;font-size:14.5px;line-height:1.45;
+    color:#f1fff2;font-weight:500;max-width:380px;padding-top:14px}
+  .quote .qm{font-family:'Baloo Da 2';font-size:26px;opacity:.55;color:var(--gold-300);line-height:0;vertical-align:-8px}
 
-  .footer{margin-top:18px;width:100%;display:flex;align-items:center;justify-content:space-between}
-  .footer .date{font-size:12px;letter-spacing:1px;color:#dff7e2;opacity:.85;font-family:'Manrope';font-weight:600}
-  .footer .logo{width:62px;height:62px;border-radius:50%;background:#fff;padding:5px;
-    box-shadow:0 8px 20px -6px rgba(0,0,0,.4);display:grid;place-items:center;overflow:hidden}
+  .footer{margin-top:14px;width:100%;display:flex;align-items:center;justify-content:space-between}
+  .footer .date{font-size:11.5px;letter-spacing:1px;color:#dff7e2;opacity:.85;font-family:'Manrope';font-weight:600}
+  .footer .logo{width:54px;height:54px;border-radius:50%;background:#fff;padding:4px;flex-shrink:0;
+    box-shadow:0 8px 20px -6px rgba(0,0,0,.4),0 0 0 2px var(--gold-500);display:grid;place-items:center;overflow:hidden}
   .footer .logo img{width:100%;height:100%;object-fit:contain}
 
   .note{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
@@ -214,6 +227,7 @@
       <div class="stage">
         <div class="card-shadow">
           <div class="card" id="card">
+            <div class="forestband" id="forestband"><img src="asset/green-tree-forest-3.jpg" alt="" id="forestImg" /></div>
             <div class="grain"></div>
             <div class="blob b1"></div>
             <div class="blob b2"></div>
@@ -250,9 +264,7 @@
               <div class="footer">
                 <div class="date" id="outDate">SEPTEMBER 2026</div>
                 <div class="logo">
-                  <img id="logoImg" alt="logo"
-                    src="logo.png"
-                    onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;circle cx=%2250%22 cy=%2250%22 r=%2248%22 fill=%22none%22 stroke=%22%231a7a3c%22 stroke-width=%223%22/&gt;&lt;path d=%22M50 22C38 36 33 50 40 64c3 7 9 12 10 12s7-5 10-12c7-14 2-28-10-42z%22 fill=%22%235cb338%22/&gt;&lt;path d=%22M50 60C42 52 32 50 26 54c10 4 16 10 24 18 8-8 14-14 24-18-6-4-16-2-24 6z%22 fill=%22%234a9e2e%22/&gt;&lt;/svg&gt;'" />
+                  <img id="logoImg" alt="logo" src="asset/f4e0b490-e97f-4035-abc0-717420b69b01.png" />
                 </div>
               </div>
             </div>
@@ -282,6 +294,21 @@
   const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
   const now = new Date();
   $('outDate').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+
+  // ---- align forest band exactly behind the photo frame ----
+  function syncForestBand(){
+    const card = $('card'), frame = document.querySelector('.frame');
+    const band = $('forestband'), bandImg = $('forestImg');
+    const cardBox = card.getBoundingClientRect(), frameBox = frame.getBoundingClientRect();
+    const top = frameBox.top - cardBox.top, height = frameBox.height;
+    band.style.top = top + 'px';
+    band.style.height = height + 'px';
+    bandImg.style.top = (-top) + 'px';
+    bandImg.style.height = card.offsetHeight + 'px';
+  }
+  syncForestBand();
+  window.addEventListener('resize', syncForestBand);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(syncForestBand);
 
   // ---- photo upload ----
   drop.addEventListener('click', () => fileInput.click());
@@ -319,6 +346,7 @@
     try{
       // make sure all webfonts are ready so Bangla metrics match the preview
       if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      syncForestBand();
       // render at 2x of the 540px card => 1080x1350
       const canvas = await html2canvas(card, {
         scale: 2,
