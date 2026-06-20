@@ -197,6 +197,29 @@
     font-family:'Manrope';padding:14px 24px 22px;border-top:1px solid var(--line);margin-top:8px}
   .sitefooter a{color:var(--green-700);font-weight:700;text-decoration:none}
   .sitefooter a:hover{text-decoration:underline}
+
+  /* ---- share modal ---- */
+  .modalOverlay{position:fixed;inset:0;background:rgba(8,30,18,.55);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:50;padding:18px}
+  .modalOverlay.hidden{display:none}
+  .modalCard{background:var(--paper);border-radius:18px;max-width:440px;width:100%;
+    max-height:88vh;overflow-y:auto;padding:22px 22px 20px;box-shadow:0 30px 60px -10px rgba(0,0,0,.35)}
+  .modalCard h3{margin:0 0 4px;font-size:17px;color:var(--green-900);font-family:'Baloo Da 2'}
+  .modalCard .sub{margin:0 0 14px;font-size:12.5px;color:var(--muted)}
+  .captionOpt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);
+    background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;
+    font-size:13px;line-height:1.5;color:var(--ink);font-family:'Hind Siliguri',sans-serif;
+    transition:border-color .15s,background .15s}
+  .captionOpt:hover{border-color:var(--green-400)}
+  .captionOpt.selected{border-color:var(--green-700);background:#f0f8f1}
+  .modalActions{display:flex;gap:10px;margin-top:14px}
+  .modalActions button{flex:1;border-radius:12px;padding:11px 14px;font-size:13.5px;
+    font-weight:700;cursor:pointer;border:none}
+  .btnCopy{background:#eef3ef;color:var(--green-900)}
+  .btnFb{background:#1877F2;color:#fff}
+  .modalClose{display:block;margin:10px auto 0;background:none;border:none;color:var(--muted);
+    font-size:12.5px;cursor:pointer;text-decoration:underline}
+  .copyHint{font-size:11.5px;color:var(--green-700);margin-top:6px;min-height:14px;text-align:center}
 </style>
 </head>
 <body>
@@ -243,6 +266,21 @@
 
       <button class="btn" id="download">⬇  ডাউনলোড PNG</button>
       <p class="hint" id="status"></p>
+    </div>
+
+    <!-- SHARE MODAL -->
+    <div class="modalOverlay hidden" id="shareModal">
+      <div class="modalCard">
+        <h3>🌿 ক্যাপশন বেছে নিন</h3>
+        <p class="sub">ছবি ডাউনলোড হয়ে গেছে — ফেসবুকে পোস্ট করার আগে একটা ক্যাপশন বেছে নিন।</p>
+        <div id="captionList"></div>
+        <div class="modalActions">
+          <button class="btnCopy" id="copyCaption">📋 কপি করো</button>
+          <button class="btnFb" id="shareFb">📘 Facebook-এ শেয়ার</button>
+        </div>
+        <p class="copyHint" id="copyHint"></p>
+        <button class="modalClose" id="closeModal">বন্ধ করো</button>
+      </div>
     </div>
 
     <!-- PREVIEW -->
@@ -399,6 +437,7 @@
       a.href = dataUrl;
       a.click();
       status.textContent = '✓ ডাউনলোড সম্পন্ন!';
+      openShareModal();
     }catch(err){
       console.error(err);
       status.textContent = 'সমস্যা হয়েছে — আবার চেষ্টা করো।';
@@ -406,6 +445,54 @@
       btn.disabled = false;
       setTimeout(()=>status.textContent='',3500);
     }
+  });
+
+  // ---- share captions ----
+  function buildCaptions(){
+    const nameBn = ($('nameBn').value || '').trim();
+    const desig = ($('desig').value || '').trim();
+    const who = nameBn && desig ? `${nameBn}, ${desig}` : (nameBn || 'আমাদের একজন সদস্য');
+    return [
+      `🌿 ${who} — সাতক্ষীরা বোটানিক্যাল সোসাইটির পরিবারের একজন গর্বিত সদস্য।\nমানুষ, প্রকৃতির মতো আনত হও, হও সবুজ। 🌱\n#SatkhiraBotanicalSociety #সবুজ_বাংলাদেশ`,
+      `🍃 সবুজে সবুজে গড়ে উঠুক আগামীর বাংলাদেশ।\n${who} — সাতক্ষীরা বোটানিক্যাল সোসাইটি। 🌳\n#GreenBangladesh #SBS`,
+      `🌳 গাছ লাগাই, প্রকৃতি বাঁচাই।\n${who}, সাতক্ষীরা বোটানিক্যাল সোসাইটির সাথে আছি এই যাত্রায়। 🌿\n#WeForNatureAndHumanity`
+    ];
+  }
+  let selectedCaption = '';
+  function openShareModal(){
+    const list = $('captionList');
+    list.innerHTML = '';
+    const captions = buildCaptions();
+    captions.forEach((c, i) => {
+      const opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'captionOpt' + (i === 0 ? ' selected' : '');
+      opt.textContent = c;
+      opt.addEventListener('click', () => {
+        list.querySelectorAll('.captionOpt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedCaption = c;
+      });
+      list.appendChild(opt);
+    });
+    selectedCaption = captions[0];
+    $('copyHint').textContent = '';
+    $('shareModal').classList.remove('hidden');
+  }
+  $('closeModal').addEventListener('click', () => $('shareModal').classList.add('hidden'));
+  $('shareModal').addEventListener('click', (e) => { if(e.target.id === 'shareModal') $('shareModal').classList.add('hidden'); });
+  $('copyCaption').addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(selectedCaption);
+      $('copyHint').textContent = '✓ ক্যাপশন কপি হয়েছে!';
+    }catch(err){
+      $('copyHint').textContent = 'কপি করতে সমস্যা হয়েছে।';
+    }
+  });
+  $('shareFb').addEventListener('click', async () => {
+    try{ await navigator.clipboard.writeText(selectedCaption); $('copyHint').textContent = '✓ ক্যাপশন কপি হয়েছে — ফেসবুকে পেস্ট করো।'; }
+    catch(err){}
+    window.open('https://www.facebook.com/', '_blank', 'noopener');
   });
 </script>
 </body>
