@@ -58,12 +58,18 @@
   }
   .topbar h1{font-size:16px;font-weight:700;letter-spacing:.2px}
   .topbar h1 span{display:block;font-size:12px;font-weight:500;color:var(--muted);font-family:'Hind Siliguri'}
+  @media (max-width:480px){
+    .topbar{padding:14px 16px}
+    .topbar h1{font-size:14px}
+    .topbar h1 span{font-size:10.5px}
+  }
 
   .wrap{
     max-width:1180px;margin:0 auto;padding:28px 24px 60px;
     display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start;
   }
-  @media (max-width:900px){.wrap{grid-template-columns:1fr;gap:24px}}
+  @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:24px;padding:20px 16px 40px}}
+  @media (max-width:480px){.wrap{padding:14px 10px 32px;gap:18px}}
 
   /* ---------- Controls panel ---------- */
   .panel{
@@ -71,6 +77,7 @@
     padding:22px;box-shadow:var(--shadow);position:sticky;top:90px;
   }
   @media (max-width:900px){.panel{position:static}}
+  @media (max-width:480px){.panel{padding:16px;border-radius:14px}}
   .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:1.4px;color:var(--green-700);margin-bottom:4px}
   .panel .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
   .field{margin-bottom:16px}
@@ -107,8 +114,13 @@
   .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
   /* ---------- Preview ---------- */
-  .stage{display:flex;justify-content:center}
-  .card-shadow{filter:drop-shadow(0 30px 60px rgba(11,61,31,.35))}
+  .stage{display:flex;justify-content:center;overflow:hidden;width:100%;min-width:0}
+  .scaleBox{flex-shrink:0;width:calc(540px * var(--card-scale,1));height:calc(675px * var(--card-scale,1))}
+  .card-shadow{
+    width:540px;height:675px;
+    filter:drop-shadow(0 30px 60px rgba(11,61,31,.35));
+    transform:scale(var(--card-scale,1));transform-origin:top left;
+  }
 
   /* THE CARD — 1080x1350 scaled down for screen */
   .card{
@@ -172,11 +184,13 @@
   .quote .qm{font-family:'Baloo Da 2';font-size:26px;opacity:.55;color:var(--gold-300);line-height:0;vertical-align:-8px}
 
   .footer{margin-top:14px;width:100%;display:flex;align-items:center;justify-content:space-between}
-  .footer .date{font-size:10px;letter-spacing:1.1px;color:var(--gold-300);opacity:.8;font-family:'Manrope';font-weight:600;line-height:1.55;text-transform:uppercase}
-  .footer .date span{display:block;font-size:8.5px;letter-spacing:.5px;font-weight:400;color:#dff7e2;opacity:.65;text-transform:none}
-  .footer .logo{width:50px;height:50px;border-radius:50%;background:#fff;padding:3px;flex-shrink:0;
-    box-shadow:0 6px 16px -4px rgba(0,0,0,.4);display:grid;place-items:center;overflow:hidden}
-  .footer .logo img{width:100%;height:100%;object-fit:contain}
+  .footer .date{font-size:10.5px;letter-spacing:1.6px;color:var(--gold-300);opacity:.85;font-family:'Manrope';
+    font-weight:700;line-height:1.25;font-variant-caps:small-caps;text-transform:none}
+  .footer .date span{display:block;font-size:9px;letter-spacing:.8px;font-weight:400;color:#dff7e2;opacity:.6;
+    font-variant-caps:small-caps;margin-top:2px}
+  .footer .logo{width:50px;height:50px;border-radius:50%;background:#fff;flex-shrink:0;
+    box-shadow:0 6px 16px -4px rgba(0,0,0,.4);overflow:hidden}
+  .footer .logo img{width:100%;height:100%;object-fit:cover;display:block}
 
   .note{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
   .sitefooter{text-align:center;font-size:12px;color:var(--muted);opacity:.8;
@@ -188,7 +202,7 @@
 <body>
   <div class="topbar">
     <div class="mark">S</div>
-    <h1>Photocard Maker <span>সাতক্ষীরা বোটানিক্যাল সোসাইটি</span></h1>
+    <h1>Photocard <span>সাতক্ষীরা বোটানিক্যাল সোসাইটি</span></h1>
   </div>
 
   <div class="wrap">
@@ -232,8 +246,9 @@
     </div>
 
     <!-- PREVIEW -->
-    <div>
+    <div style="min-width:0">
       <div class="stage">
+        <div class="scaleBox">
         <div class="card-shadow">
           <div class="card" id="card">
             <div class="forestband" id="forestband"><img src="asset/green-tree-forest-3.jpg" alt="" id="forestImg" /></div>
@@ -279,6 +294,7 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
       <p class="note">প্রিভিউ — ডাউনলোড করলে উচ্চ রেজোলিউশন (1080×1350) ছবি পাবে।</p>
     </div>
@@ -315,6 +331,17 @@
   syncForestBand();
   window.addEventListener('resize', syncForestBand);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(syncForestBand);
+
+  // ---- responsive preview scaling (card stays 540x675 for crisp export; only the visual shrinks) ----
+  const CARD_W = 540, CARD_H = 675;
+  function syncCardScale(){
+    const stage = document.querySelector('.stage');
+    const available = stage.parentElement.clientWidth;
+    const scale = Math.min(1, available / CARD_W);
+    document.documentElement.style.setProperty('--card-scale', scale);
+  }
+  syncCardScale();
+  window.addEventListener('resize', syncCardScale);
 
   // ---- photo upload ----
   drop.addEventListener('click', () => fileInput.click());
@@ -353,6 +380,10 @@
       // make sure all webfonts are ready so Bangla metrics match the preview
       if(document.fonts && document.fonts.ready) await document.fonts.ready;
       syncForestBand();
+      // neutralize the responsive preview scale so html2canvas always
+      // captures the card at its true 540x675 box (full-res export)
+      const prevScale = document.documentElement.style.getPropertyValue('--card-scale');
+      document.documentElement.style.setProperty('--card-scale', '1');
       // render at 2x of the 540px card => 1080x1350
       const canvas = await html2canvas(card, {
         scale: 2,
@@ -360,6 +391,7 @@
         backgroundColor: '#0d5e29',
         logging: false
       });
+      document.documentElement.style.setProperty('--card-scale', prevScale);
       const dataUrl = canvas.toDataURL('image/png');
       const a = document.createElement('a');
       const safe = ($('nameEn').value || 'photocard').trim().replace(/\s+/g,'_');
