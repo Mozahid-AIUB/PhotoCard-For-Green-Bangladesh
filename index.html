@@ -361,7 +361,12 @@
     const card = $('card'), frame = document.querySelector('.frame');
     const band = $('forestband'), bandImg = $('forestImg');
     const cardBox = card.getBoundingClientRect(), frameBox = frame.getBoundingClientRect();
-    const top = frameBox.top - cardBox.top, height = frameBox.height;
+    // getBoundingClientRect() returns screen-space pixels, which are shrunk by
+    // the ancestor's transform:scale(--card-scale) on mobile. band/bandImg's
+    // top/height are applied INSIDE that scaled box (in the card's own
+    // unscaled 540x675 coordinate space), so divide out the scale factor.
+    const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1;
+    const top = (frameBox.top - cardBox.top) / scale, height = frameBox.height / scale;
     band.style.top = top + 'px';
     band.style.height = height + 'px';
     bandImg.style.top = (-top) + 'px';
